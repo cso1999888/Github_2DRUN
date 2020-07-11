@@ -6,13 +6,13 @@ public class player : MonoBehaviour
     //[Header("string")]
     //[Tooltip("string")]
     //[Range(float min,float max)]
-    [Header("速度"), Tooltip("血量"), Range(0, 100)]
-    public float speed = 1f;
+    [Header("速度")]
+    public float speed = 1.5f;
     [Header("血量")]
     public float HP;
     [Header("得分"), Tooltip("得分")]
     public int point;
-    [Header("跳躍高度")]
+    [Header("跳躍高度"), Range(0, 500)]
     public float JumpHeight;
     [Header("音效")]
     public AudioClip SoundJump;
@@ -24,6 +24,8 @@ public class player : MonoBehaviour
     [Header("動畫控制器")]
     public Animator animator;
     public Transform PlayerTrans;
+    public CapsuleCollider2D cc2d;
+    public Rigidbody2D rig;
     #endregion
 
     #region Methods
@@ -32,8 +34,20 @@ public class player : MonoBehaviour
     /// </summary>
     private void Jump()
     {
-        bool key = Input.GetKey(KeyCode.Space);
-        animator.SetBool("Jump", key);
+        //顛倒運算子!   !true ------- false
+        bool key = Input.GetKeyDown(KeyCode.Space);
+        animator.SetBool("Jump", !isGround);
+
+        // 如果在地板上
+        if (isGround)
+        {
+            if (key)
+            {
+                isGround = false; //將isGround設為false
+                rig.AddForce(new Vector2(0, JumpHeight)); //施加推力
+            }
+        }
+
     }
 
     /// <summary>
@@ -43,6 +57,16 @@ public class player : MonoBehaviour
     {
         bool key = Input.GetKey(KeyCode.LeftControl);
         animator.SetBool("Slide", key);
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            cc2d.offset = new Vector2(0.002f, -0.04f);
+            cc2d.size = new Vector2(0.13f, 0.13f);
+        }
+        else
+        {
+            cc2d.offset = new Vector2(0.006f, -0.025f);
+            cc2d.size = new Vector2(0.15f, 0.25f);
+        }
     }
 
     /// <summary>
@@ -61,6 +85,15 @@ public class player : MonoBehaviour
 
     }
 
+    private void Move()
+    {
+        if(rig.velocity.magnitude < 6)
+            {
+                //剛體添加推力
+                rig.AddForce(new Vector2(speed, 0));
+            }
+    }
+
     /// <summary>
     /// Die: 死亡動畫、死亡音效
     /// </summary>
@@ -71,31 +104,35 @@ public class player : MonoBehaviour
     #endregion
 
     #region Event
-    private void Start() 
+    private void Start()
     {
-        
+
     }
     private void Update()
     {
         Slide();
+    }
+    
+    /// <summary>
+    /// 固定更新事件：一秒固定更新 50 次，官網建議將包含剛體之運動寫在這裡
+    /// </summary>
+    private void FixedUpdate()
+    {
         Jump();
-        #region Move
-        if (Input.GetKey("d"))
+        Move();
+    }
+    /// <summary>
+    /// 碰撞事件，碰到地板後執行一次
+    /// </summary>
+    /// <param name="collision">碰到物件的碰撞資訊</param>
+    public bool isGround;
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        //如果碰撞物件名稱 = Floor
+        if (collision.gameObject.name == "Floor")
         {
-            //PlayerTrans.position = new Vector3(0, 6, 0);
-            PlayerTrans.Translate(0.1f, 0, 0);
+            isGround = true;
         }
-        if (Input.GetKey("a"))
-        {
-            //PlayerTrans.position = new Vector3(0, 6, 0);
-            PlayerTrans.Translate(-0.1f, 0, 0);
-        }
-        if (Input.GetKeyDown("space"))
-        {
-            //PlayerTrans.position = new Vector3(0, 6, 0);
-            PlayerTrans.Translate(0, 2, 0);
-        }
-        #endregion
     }
     #endregion
 }

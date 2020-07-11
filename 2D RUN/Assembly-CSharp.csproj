@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Script\Learn_NonStatic.cs" />
+    <Compile Include="Assets\Script\Learn_if.cs" />
     <Compile Include="Assets\Script\Pratice.cs" />
     <Compile Include="Assets\Script\SceneControl.cs" />
     <Compile Include="Assets\Script\player.cs" />
