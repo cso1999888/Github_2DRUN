@@ -21,6 +21,9 @@ public class player : MonoBehaviour
     public AudioClip SoundPoint;
     [Header("死亡")]
     public bool dead;
+    [Header("動畫控制器")]
+    public Animator animator;
+    public Transform PlayerTrans;
     #endregion
 
     #region Methods
@@ -29,7 +32,8 @@ public class player : MonoBehaviour
     /// </summary>
     private void Jump()
     {
-        print("跳躍");
+        bool key = Input.GetKey(KeyCode.Space);
+        animator.SetBool("Jump", key);
     }
 
     /// <summary>
@@ -37,7 +41,8 @@ public class player : MonoBehaviour
     /// </summary>
     private void Slide()
     {
-        print("滑行");
+        bool key = Input.GetKey(KeyCode.LeftControl);
+        animator.SetBool("Slide", key);
     }
 
     /// <summary>
@@ -68,11 +73,29 @@ public class player : MonoBehaviour
     #region Event
     private void Start() 
     {
-
+        
     }
     private void Update()
     {
-
+        Slide();
+        Jump();
+        #region Move
+        if (Input.GetKey("d"))
+        {
+            //PlayerTrans.position = new Vector3(0, 6, 0);
+            PlayerTrans.Translate(0.1f, 0, 0);
+        }
+        if (Input.GetKey("a"))
+        {
+            //PlayerTrans.position = new Vector3(0, 6, 0);
+            PlayerTrans.Translate(-0.1f, 0, 0);
+        }
+        if (Input.GetKeyDown("space"))
+        {
+            //PlayerTrans.position = new Vector3(0, 6, 0);
+            PlayerTrans.Translate(0, 2, 0);
+        }
+        #endregion
     }
     #endregion
 }
