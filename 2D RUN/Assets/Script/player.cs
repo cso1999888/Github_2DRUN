@@ -35,7 +35,7 @@ public class player : MonoBehaviour
     private void Jump()
     {
         //顛倒運算子!   !true ------- false
-        bool key = Input.GetKeyDown(KeyCode.Space);
+        bool key = Input.GetKey(KeyCode.Space);
         animator.SetBool("Jump", !isGround);
 
         // 如果在地板上
@@ -130,6 +130,12 @@ public class player : MonoBehaviour
     {
         //如果碰撞物件名稱 = Floor
         if (collision.gameObject.name == "Floor")
+        {
+            isGround = true;
+        }
+
+        //如果碰撞物件名稱 = Floor
+        if (collision.gameObject.name == "Floats" && transform.position.y + 2 > collision.gameObject.transform.position.y)
         {
             isGround = true;
         }
