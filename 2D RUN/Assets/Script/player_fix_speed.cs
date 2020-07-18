@@ -31,6 +31,9 @@ public class player_fix_speed : MonoBehaviour
     public Image HPBar;
     private float HPMax;
     public AudioSource aud;
+    public GameObject fin;
+    public Text TextPoint;
+    public Text TextFin;
     #endregion
 
     #region Methods
@@ -63,11 +66,14 @@ public class player_fix_speed : MonoBehaviour
     {
         bool key = Input.GetKey(KeyCode.LeftControl);
         animator.SetBool("Slide", key);
+
+        //只有單行程式碼時可省略大括號
+        if(Input.GetKeyDown(KeyCode.LeftControl)) aud.PlayOneShot(SoundSlide, 0.5f);
+
         if (Input.GetKey(KeyCode.LeftControl))
         {
             cc2d.offset = new Vector2(0.002f, -0.04f);
             cc2d.size = new Vector2(0.13f, 0.13f);
-            aud.PlayOneShot(SoundSlide, 0.1f);
         }
         else
         {
@@ -82,9 +88,11 @@ public class player_fix_speed : MonoBehaviour
     private void Hurt(Collider2D collision)
     {
         HP -= 50;
-        Destroy(collision.gameObject);
+        Destroy(collision.gameObject);  // 摧毀碰撞物件
         HPBar.fillAmount = HP / HPMax;  // 圖片填滿程度 = HP / HPMax
-        aud.PlayOneShot(SoundHurt);
+        aud.PlayOneShot(SoundHurt);     // 播放音效一次
+
+        if (HP <= 0) Die();             // HP小於0死亡
     }
 
     /// <summary>
@@ -109,10 +117,23 @@ public class player_fix_speed : MonoBehaviour
     /// </summary>
     private void Die()
     {
+        if (dead) return;              // 如果死亡，跳出迴圈
 
+        speed = 0;
+        dead = true;
+        animator.SetTrigger("Die");    // 播放死亡動畫
+        fin.SetActive(true);           // 顯示結束畫面
+        TextPoint.text = "Point: " + point;
+        TextFin.text = "Game Over";
     }
 
-
+    private void Win()
+    {
+        fin.SetActive(true);
+        TextPoint.text = "Point: " + textPoint;
+        TextFin.text = "Win!";
+        speed = 0;
+    }
     #endregion
 
     #region Event
@@ -122,7 +143,10 @@ public class player_fix_speed : MonoBehaviour
     }
     private void Update()
     {
+        if (dead) return;
+
         Slide();
+        if (transform.position.y <= -5) Die();
     }
     
     /// <summary>
@@ -130,6 +154,8 @@ public class player_fix_speed : MonoBehaviour
     /// </summary>
     private void FixedUpdate()
     {
+        if (dead) return;
+
         Jump();
         Move();
     }
@@ -165,14 +191,10 @@ public class player_fix_speed : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //如果觸發物件tag = Point
-        if (collision.tag == "Point")
-        {
-            Point(collision);
-        }
-        if (collision.tag == "Enemy")
-        {
-            Hurt(collision);
-        }
+        if (collision.tag == "Point") Point(collision);
+        if (collision.tag == "Enemy") Hurt(collision);
+        if (collision.name == "Teleport") Win();
+
     }
     #endregion
 }
