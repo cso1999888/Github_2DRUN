@@ -1,0 +1,16 @@
+{
+"companyName": "Kai",
+"productName": "Kai|2D RUN",
+"productVersion": "0.1",
+"dataUrl": "web_20200718.data.unityweb",
+"wasmCodeUrl": "web_20200718.wasm.code.unityweb",
+"wasmFrameworkUrl": "web_20200718.wasm.framework.unityweb",
+"graphicsAPI": ["WebGL 2.0","WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#7D3480",
+"cacheControl": {"default": "must-revalidate"},
+"developmentBuild": false,
+"multithreading": false,
+"unityVersion": "2019.4.1f1"
+}
